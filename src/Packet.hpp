@@ -7,4 +7,8 @@
 
 class Packet {
 
+    public:
+        char bytes[1024];
+        int length;
+
 };

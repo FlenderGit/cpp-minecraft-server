@@ -22,7 +22,6 @@ class Server {
     private:
 
         std::string address;
-        Logger* logger;
         std::vector<Client*> clients;
         std::mutex clientsMutex;
 
