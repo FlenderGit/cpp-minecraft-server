@@ -4,10 +4,13 @@
 
 #ifdef _WIN32
 #include <io.h>
-#define access _access
+#include <winsock2.h>
+#define read recv
 
 #else
 #include <unistd.h>
+#define SOCKET_ERROR -1
+#define closesocket close
 #endif
 
 class PacketHandler;
@@ -15,6 +18,7 @@ class PacketHandler;
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
 #include "Logger.hpp"
+#include "errno.h"
 
 
 enum State {

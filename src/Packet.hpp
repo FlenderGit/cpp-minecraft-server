@@ -8,7 +8,7 @@ class Packet {
 
     public:
         int id;
-        byte bytes[PACKET_BUFFER_SIZE];
+        char bytes[PACKET_BUFFER_SIZE];
         int length;
         uint bytesRead;
 

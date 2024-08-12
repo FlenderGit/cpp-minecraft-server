@@ -21,6 +21,7 @@ int Server::run() {
             return 0;
         }
 
+        Logger::log(INFO, "New client connected --> " + std::to_string(client_socket));
         addClient(client_socket);
     }
 
@@ -66,22 +67,22 @@ int Server::init() {
 
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (server_socket == -1) {
-        Logger::log(ERR, "Failed to create socket");
+        stop("Failed to create socket", true);
         return 0;
     }
 
     struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(25565);
+    server_address.sin_port = htons(port);
     server_address.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) {
-        Logger::log(ERR, "Failed to bind socket");
+        stop("Failed to bind", true);
         return 0;
     }
 
     if (listen(server_socket, 5) == -1) {
-        Logger::log(ERR, "Failed to listen on socket");
+        stop("Failed to listen", true);
         return 0;
     }
 
@@ -90,8 +91,20 @@ int Server::init() {
     return 1;
 }
 
+void Server::stop(std::string message, bool error) {
+    Logger::log(error ? ERR : INFO, "Stopping server: " + message);
+    disable();
+    exit(0);
+}
+
 void Server::disable() {
     #ifdef _WIN32
+    closesocket(server_socket);
+    uint size = static_cast<uint>(clients.size());
+    for (uint i = 0; i < size; i++) {
+        closesocket(clients[i]->socket);
+    }
     WSACleanup();
+
     #endif
 }

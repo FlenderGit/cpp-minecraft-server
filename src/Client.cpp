@@ -13,16 +13,17 @@ int Client::start() {
 
 int Client::handleConnection() {
 
-
     for (;;) {
     
         // Create a new packet, read the bytes from the socket and test if 
         Packet *packet = new Packet();
-        int bytesReceived = read(socket, packet->bytes, 1024);
-        if (bytesReceived <= 0) {
-            close(socket);
-            Logger::log(INFO, "Client disconnected");
-            return 0;
+
+        int bytesReceived = read(socket, packet->bytes, 1024, 0);
+        
+        Logger::log(INFO, "Bytes received: " + std::to_string(bytesReceived));
+        if (bytesReceived == SOCKET_ERROR) {
+            Logger::log(ERR, "Failed to read from socket: " + std::string(strerror(errno)));
+            break;
         }
 
         // Load the packet, test it and handle it
@@ -31,10 +32,13 @@ int Client::handleConnection() {
 
         if (packetHandler->handle() == 0) {
             Logger::log(ERR, "Failed to handle packet");
-            return 0;
+            break;
         }
         
     }
 
-    return 1;
+    // Close the socket and remove the client from the server
+    closesocket(socket);
+
+    return 0;
 }

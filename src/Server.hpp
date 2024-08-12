@@ -22,6 +22,7 @@ class Server {
 
         int run();
         void disable();
+        void stop(std::string message, bool error);
 
         //void sendMessage(std::string message);
 
