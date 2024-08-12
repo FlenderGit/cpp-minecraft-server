@@ -1,15 +1,19 @@
 #pragma once
 
-#define S_HANDSHAKE 0x00
-#define S_LOGIN_START 0x00
-#define S_ENCRYPTION_REQUEST 0x01
-#define S_LOGIN_SUCCESS 0x02
+#include "Types.hpp"
+
+#define PACKET_BUFFER_SIZE 1024
 
 class Packet {
 
     public:
         int id;
-        char bytes[1024];
+        byte bytes[PACKET_BUFFER_SIZE];
         int length;
+        uint bytesRead;
+
+        Packet();
+
+    private:
 
 };

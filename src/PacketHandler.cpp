@@ -1,6 +1,6 @@
 #include "PacketHandler.hpp"
 
-PacketHandler::PacketHandler(Client* client) {
+PacketHandler::PacketHandler(Client *client) {
     this->client = client;
 }
 
@@ -9,11 +9,12 @@ int PacketHandler::loadPacket(Packet *packet) {
 
     int length = readVarInt();
     if (length != packet->length) {
-        Logger::log(ERROR, "Invalid packet length");
+        Logger::log(ERR, "Invalid packet length");
         return 0;
     }
 
     int packetId = readVarInt();
+    packet->id = packetId;
 
     return 1;
 }
@@ -31,7 +32,7 @@ int PacketHandler::handle() {
         case Configuration:
             break;
         default:
-            Logger::log(ERROR, "Invalid state");
+            Logger::log(ERR, "Invalid state");
             return 0;
     }
 
@@ -44,12 +45,16 @@ inline int PacketHandler::handleHandshake() {
     short serverPort = readShort();
     int nextState = readVarInt();
 
+    Logger::log(INFO, "Protocol version: " + std::to_string(protocolVersion));
+    Logger::log(INFO, "Server address: " + serverAddress);
+    Logger::log(INFO, "Server port: " + std::to_string(serverPort));
+
     if (nextState == 1) {
         client->state = Status;
     } else if (nextState == 2) {
         client->state = Login;
     } else {
-        Logger::log(ERROR, "Invalid next state");
+        Logger::log(ERR, "Invalid next state");
         return 0;
     }
 
@@ -57,7 +62,7 @@ inline int PacketHandler::handleHandshake() {
 }
 
 int PacketHandler::readVarInt() {
-    int numRead = 0;
+    uint numRead = currentPacket->bytesRead;
     int result = 0;
     char read;
     do {
@@ -67,10 +72,23 @@ int PacketHandler::readVarInt() {
 
         numRead += 7;
         if (numRead > 32) {
-            Logger::log(ERROR, "VarInt is too big");
+            Logger::log(ERR, "VarInt is too big");
             return 0;
         }
     } while ((read & CONTINUE_BIT) != 0);
 
+    currentPacket->bytesRead = numRead;
     return result;
+}
+
+long PacketHandler::readVarLong() {
+    return 0;
+}
+
+std::string PacketHandler::readString() {
+    return "";
+}
+
+short PacketHandler::readShort() {
+    return 0;
 }

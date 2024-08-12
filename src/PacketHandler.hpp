@@ -1,15 +1,17 @@
 #pragma once
 
+class Client;
+
 #include "Client.hpp"
 #include "Packet.hpp"
 
 
 class PacketHandler {
     public:
-        Client* client;
-        Packet* currentPacket;
+        Client *client;
+        Packet *currentPacket;
 
-        PacketHandler(Client* client);
+        PacketHandler(Client *client);
 
         int loadPacket(Packet *packet);
         int handle();

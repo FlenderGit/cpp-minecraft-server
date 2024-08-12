@@ -17,7 +17,7 @@ int Client::handleConnection() {
     for (;;) {
     
         // Create a new packet, read the bytes from the socket and test if 
-        Packet *packet;
+        Packet *packet = new Packet();
         int bytesReceived = read(socket, packet->bytes, 1024);
         if (bytesReceived <= 0) {
             close(socket);
@@ -30,7 +30,7 @@ int Client::handleConnection() {
         packetHandler->loadPacket(packet);
 
         if (packetHandler->handle() == 0) {
-            Logger::log(ERROR, "Failed to handle packet");
+            Logger::log(ERR, "Failed to handle packet");
             return 0;
         }
         

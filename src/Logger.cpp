@@ -10,7 +10,7 @@ void Logger::log(LogLevel level, std::string message) {
         case WARNING:
             std::cout << PREFIX_WARNING << message << std::endl;
             break;
-        case ERROR:
+        case ERR:
             std::cout << PREFIX_ERROR << message << std::endl;
             break;
     }

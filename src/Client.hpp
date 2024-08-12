@@ -10,9 +10,12 @@
 #include <unistd.h>
 #endif
 
-#include "Logger.hpp"
+class PacketHandler;
+
 #include "Packet.hpp"
 #include "PacketHandler.hpp"
+#include "Logger.hpp"
+
 
 enum State {
     Handshake,

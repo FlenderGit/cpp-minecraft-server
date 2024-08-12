@@ -4,7 +4,13 @@
 #include <string>
 #include <vector>
 
-#include "Packet.hpp"
+#ifdef _WIN32
+#include <winsock2.h>
+#define socklen_t int
+#else
+#include <sys/socket.h>
+#endif
+
 #include "Logger.hpp"
 #include "Client.hpp"
 
@@ -14,7 +20,8 @@ class Server {
 
         Server(std::string ip, int port);
 
-        void run();
+        int run();
+        void disable();
 
         //void sendMessage(std::string message);
 
@@ -23,6 +30,7 @@ class Server {
 
         std::string ip;
         int port;
+        int server_socket;
 
         std::vector<Client*> clients;
         std::mutex clientsMutex;
