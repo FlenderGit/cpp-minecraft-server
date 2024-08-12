@@ -25,16 +25,14 @@ int Client::handleConnection() {
             return 0;
         }
 
-        if (packetHandler->isValid(packet) == false) {
-            Logger::log(ERROR, "Invalid packet");
-            return 0;
-        }
+        // Load the packet, test it and handle it
+        packet->length = bytesReceived;
+        packetHandler->loadPacket(packet);
 
-        if (packetHandler->handle(packet) == 0) {
+        if (packetHandler->handle() == 0) {
             Logger::log(ERROR, "Failed to handle packet");
             return 0;
         }
-
         
     }
 

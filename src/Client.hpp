@@ -15,6 +15,8 @@
 #include "PacketHandler.hpp"
 
 enum State {
+    Handshake,
+    Status,
     Login,
     Play,
     Configuration,

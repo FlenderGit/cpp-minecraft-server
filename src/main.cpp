@@ -1,9 +1,12 @@
 
 #include <stdio.h>
 
+#include "Server.hpp"
+
 int main() {
     
-    printf("Hello World\n");
+    Server *server = new Server("localhost", 25565);
+    server->run();
 
     return 0;
 }

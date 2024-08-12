@@ -8,6 +8,7 @@
 class Packet {
 
     public:
+        int id;
         char bytes[1024];
         int length;
 
