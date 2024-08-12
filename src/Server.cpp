@@ -54,6 +54,8 @@ int Server::removeClient(int client_socket) {
 
 int Server::init() {
 
+    Logger::log(INFO, "Starting server on " + ip + ":" + std::to_string(port));
+
     #ifdef _WIN32
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -82,6 +84,8 @@ int Server::init() {
         Logger::log(ERR, "Failed to listen on socket");
         return 0;
     }
+
+    Logger::log(INFO, "Server started");
 
     return 1;
 }

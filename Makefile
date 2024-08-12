@@ -1,6 +1,6 @@
 CXX      := -c++
 CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
-LDFLAGS  := -L/usr/lib -lstdc++ -lm -L"ws2_32"
+LDFLAGS  := -L/usr/lib -lstdc++ -lm -lwsock32
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
