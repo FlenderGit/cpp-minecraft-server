@@ -21,7 +21,11 @@ class Server {
         Server(std::string ip, int port);
 
         int run();
+
+        // Handle client deconnection et server shutdown
         void disable();
+
+        // Send a message to all clients, and disable the server
         void stop(std::string message, bool error);
 
         //void sendMessage(std::string message);

@@ -30,7 +30,7 @@ int Server::run() {
     return 1;
 }
 
-int Server::addClient(int client_socket) {
+inline int Server::addClient(int client_socket) {
     std::lock_guard<std::mutex> lock(clientsMutex);
 
     Client *client = new Client(client_socket);

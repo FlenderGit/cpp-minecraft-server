@@ -1,0 +1,15 @@
+#include "Packet.hpp"
+
+Packet::Packet() {
+    this->length = 0;
+    this->id = -1;
+    this->bytesRead = 0;
+}
+
+std::string Packet::getContentAsHex() {
+    std::string content = "";
+    for (int i = 0; i < length; i++) {
+        content += bytes[i];
+    }
+    return content;
+}

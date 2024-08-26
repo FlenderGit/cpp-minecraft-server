@@ -5,26 +5,24 @@ class Client;
 #include "Client.hpp"
 #include "Packet.hpp"
 
+namespace packet {
 
 class PacketHandler {
     public:
         Client *client;
-        Packet *currentPacket;
 
-        PacketHandler(Client *client);
-
-        int loadPacket(Packet *packet);
-        int handle();
+        PacketHandler(Client *client): client(client) {}
+        int handle(ClientPacket *packet);
 
     private:
+    
+        int handleHandshake(ClientPacket *packet);
+        int handlePlay(ClientPacket *packet);
+        int handleConfiguration(ClientPacket *packet);
+        int handleStatus(ClientPacket *packet);
+        int handleLogin(ClientPacket *packet);
 
-        static const int SEGMENT_BITS = 0x7F;
-        static const int CONTINUE_BIT = 0x80;
-
-        int readVarInt();
-        long readVarLong();
-        std::string readString();
-        short readShort();
-
-        int handleHandshake();
+        void sendPacket(ResponsePacket packet);
 };
+
+}

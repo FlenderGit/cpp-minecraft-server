@@ -1,0 +1,27 @@
+#pragma once
+
+#include <string>
+
+#include "Types.hpp"
+
+namespace packet {
+    #define PACKET_BUFFER_SIZE 1024
+
+    class InfoPacket {
+
+    public:
+        int id;
+        char bytes[PACKET_BUFFER_SIZE];
+        int length;
+        int bytesRead;
+
+        InfoPacket();
+        
+        std::string getContentAsHex();
+
+    private:
+
+};
+
+}
+

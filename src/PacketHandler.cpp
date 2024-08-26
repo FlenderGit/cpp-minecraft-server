@@ -1,94 +1,93 @@
 #include "PacketHandler.hpp"
 
-PacketHandler::PacketHandler(Client *client) {
-    this->client = client;
-}
+#include "string.h"
 
-int PacketHandler::loadPacket(Packet *packet) {
-    currentPacket = packet;
+namespace packet
+{
 
-    int length = readVarInt();
-    if (length != packet->length) {
-        Logger::log(ERR, "Invalid packet length");
-        return 0;
-    }
+    int PacketHandler::handle(ClientPacket *packet)
+    {
+        // Log the packet content as hex
+        // Logger::log(INFO, "Packet ID: " + std::to_string(packet->id));
+        // Logger::log(INFO, "Packet length: " + std::to_string(packet->length));
 
-    int packetId = readVarInt();
-    packet->id = packetId;
-
-    return 1;
-}
-
-int PacketHandler::handle() {
-
-    switch (client->state) {
+        switch (client->state)
+        {
         case Handshake:
-            handleHandshake();
+            handleHandshake(packet);
             break;
         case Login:
+            handleLogin(packet);
             break;
         case Play:
+            handlePlay(packet);
             break;
         case Configuration:
+            handleConfiguration(packet);
             break;
         default:
             Logger::log(ERR, "Invalid state");
             return 0;
+        }
+
+        return 1;
     }
 
-    return 1;
-}
+    inline int PacketHandler::handleHandshake(ClientPacket *packet)
+    {
 
-inline int PacketHandler::handleHandshake() {
-    int protocolVersion = readVarInt();
-    std::string serverAddress = readString();
-    short serverPort = readShort();
-    int nextState = readVarInt();
+        struct
+        {
+            int protocolVersion;
+            std::string serverAddress;
+            short serverPort;
+            int nextState;
+        } p = {packet->readVarInt(), packet->readString(), packet->readShort(), packet->readVarInt()};
 
-    Logger::log(INFO, "Protocol version: " + std::to_string(protocolVersion));
-    Logger::log(INFO, "Server address: " + serverAddress);
-    Logger::log(INFO, "Server port: " + std::to_string(serverPort));
+        Logger::log(INFO, "Protocol version: " + std::to_string(p.protocolVersion));
+        Logger::log(INFO, "Server address: " + p.serverAddress);
+        Logger::log(INFO, "Server port: " + std::to_string(p.serverPort));
 
-    if (nextState == 1) {
-        client->state = Status;
-    } else if (nextState == 2) {
-        client->state = Login;
-    } else {
-        Logger::log(ERR, "Invalid next state");
-        return 0;
-    }
-
-    return 1;
-}
-
-int PacketHandler::readVarInt() {
-    uint numRead = currentPacket->bytesRead;
-    int result = 0;
-    char read;
-    do {
-        read = currentPacket->bytes[numRead];
-        int value = (read & SEGMENT_BITS);
-        result |= (value << numRead);
-
-        numRead += 7;
-        if (numRead > 32) {
-            Logger::log(ERR, "VarInt is too big");
+        switch (p.nextState)
+        {
+        case 1: client->state = Status; break;
+        case 2: client->state = Login;  break;
+        default:
+            Logger::log(ERR, "Invalid next state");
             return 0;
         }
-    } while ((read & CONTINUE_BIT) != 0);
 
-    currentPacket->bytesRead = numRead;
-    return result;
-}
+        return 1;
+    }
 
-long PacketHandler::readVarLong() {
-    return 0;
-}
+    inline int PacketHandler::handleLogin(ClientPacket *packet)
+    {
+        switch (packet->getID())
+        {
+        case 0x00: {
+            struct      { std::string username; std::string uuid; }
+            p =    {packet->readString(), packet->readString()};
+            Logger::log(INFO, "Username: " + p.username);
+            Logger::log(INFO, "UUID: " + p.uuid);
+            sendPacket(ResponsePacket(0x02, String("Jean"), String("1234")));
+            break;
+        }
+        default:
+            Logger::log(ERR, "Invalid packet ID");
+            return 0;
+        }
+        return 1;
+    }
 
-std::string PacketHandler::readString() {
-    return "";
-}
+    inline int PacketHandler::handleStatus(ClientPacket *packet)
+    {
+        return 1;
+    }
 
-short PacketHandler::readShort() {
-    return 0;
+    void PacketHandler::sendPacket(packet::ResponsePacket packet)
+    {
+        // Maybe more with the length of the ID and the length
+        send(client->socket, packet.getBuffer(), packet.getLength(), 0);
+    }
+
 }
