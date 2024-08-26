@@ -21,21 +21,22 @@ class Server {
 
     public:
         /**
-         * @param ip Server address IP
-         * @param port Server port
+         * @param ip
+         * @param port
          */
         Server(std::string ip, int port);
 
         /**
          * @brief Start the server
-         * @retval 0 if the server failed to start
+         * @retval R_ERR if the server failed to start
+         * @retval R_OK else
          */
         int run();
 
         /**
          * @brief Disable the server and close the sockets
          * 
-         * Used because Winsock needs to be closed before the program ends
+         * Used because Winsock needs close the sockets before the program ends
          */
         void disable();
 
@@ -51,16 +52,35 @@ class Server {
 
     private:
 
-        std::string ip;         /**< Server IP (default localhost) */
-        int port;               /**< Server port (default 25565) */
-        int server_socket;      /**< Server socket, used to accept clients */
+        std::string ip;         /**< default localhost */
+        int port;               /**< default 25565 */
+        int server_socket;
 
-        std::vector<Client*> clients;   /**< List of clients */
+        std::vector<Client*> clients;
         std::mutex clientsMutex;        /**< Mutex to protect the clients list */
 
+        /**
+         * @brief Initialize the TCP server
+         * 
+         * @retval R_ERR if the server failed to initialize
+         * @retval R_OK else
+         */
         int init();
 
-        int addClient(int client_socket);
+        /**
+         * @brief Add a client to the server
+         * 
+         * @param client_socket The socket ID of the client
+         */
+        void addClient(int client_socket);
+
+        /**
+         * @brief Remove a client from the server
+         * 
+         * @param client_socket The socket ID of the client
+         * @retval R_ERR if the client was not found
+         * @retval R_OK else
+         */
         int removeClient(int client_socket);
 
         //void sendPacket(Packet packet);

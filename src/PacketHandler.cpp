@@ -8,8 +8,14 @@ namespace packet
     int PacketHandler::handle(ClientPacket *packet)
     {
         // Log the packet content as hex
-        // Logger::log(INFO, "Packet ID: " + std::to_string(packet->id));
-        // Logger::log(INFO, "Packet length: " + std::to_string(packet->length));
+        Logger::log(INFO, "Packet ID: " + std::to_string(packet->getID()));
+        Logger::log(INFO, "Packet length: " + std::to_string(packet->getLength()));
+        // Print each byte of the packet as hex
+        char *bytes = packet->getBuffer();
+        for (int i = 0; i < packet->getLength(); i++) {
+            printf("%02X ", bytes[i]);
+        }
+        printf("\n");
 
         switch (client->state)
         {
@@ -19,25 +25,25 @@ namespace packet
         case Configuration: handleConfiguration(packet);break;
         default:
             Logger::log(ERR, "Invalid state");
-            return 0;
+            return R_ERR;
         }
-        return 1;
+        return R_OK;
     }
 
     inline int PacketHandler::handleHandshake(ClientPacket *packet)
     {
+        Logger::log(INFO, "Handshake packet");
         struct
         {
             int protocolVersion;
             std::string serverAddress;
-            short serverPort;
+            unsigned short serverPort;
             int nextState;
-        } p = {packet->readVarInt(), packet->readString(), packet->readShort(), packet->readVarInt()};
-
+        } p = {packet->readVarInt(), packet->readString(), packet->readUnsignedShort(), packet->readVarInt()};
         Logger::log(INFO, "Protocol version: " + std::to_string(p.protocolVersion));
-        Logger::log(INFO, "Server address: " + p.serverAddress);
-        Logger::log(INFO, "Server port: " + std::to_string(p.serverPort));
-
+        Logger::log(INFO, "Server: " + p.serverAddress + ":" + std::to_string(p.serverPort));
+        Logger::log(INFO, "Next state: " + std::to_string(p.nextState));
+        
         switch (p.nextState)
         {
         case 1: client->state = Status; break;
@@ -59,7 +65,7 @@ namespace packet
             p =    {packet->readString(), packet->readString()};
             Logger::log(INFO, "Username: " + p.username);
             Logger::log(INFO, "UUID: " + p.uuid);
-            sendPacket(ResponsePacket(0x02, String("Jean"), String("1234")));
+            //sendPacket(ResponsePacket(0x02, String("Jean"), String("1234")));
             break;
         }
         default:
@@ -71,6 +77,19 @@ namespace packet
 
     inline int PacketHandler::handleStatus(ClientPacket *packet)
     {
+        packet->readVarInt();
+        return 1;
+    }
+
+    inline int PacketHandler::handlePlay(ClientPacket *packet)
+    {
+        packet->readVarInt();
+        return 1;
+    }
+
+    inline int PacketHandler::handleConfiguration(ClientPacket *packet)
+    {
+        packet->readVarInt();
         return 1;
     }
 

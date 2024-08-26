@@ -24,12 +24,12 @@ namespace packet
     using ByteList = std::vector<uint8_t>;
 
     /**
-     * @brief Class Packet to handle Client and Response packets
+     * @brief Class Packet to handle ClientPacket and ResponsePacket
      */
     class Packet
     {
     public:
-        Packet(): length(0), id(-1) {}
+        Packet(): id(-1), length(0) {}
         int getID() { return id; }
         char *getBuffer() { return bytes; }
         int getLength() { return length; }
@@ -53,7 +53,7 @@ namespace packet
     {
     public:
         Type(T data) : data(data) {}
-        virtual ByteList write() = 0;
+        virtual ByteList write();
 
     private:
         T data;
@@ -75,6 +75,7 @@ namespace packet
         int readVarInt();
         std::string readString();
         short readShort();
+        unsigned short readUnsignedShort();
 
         int getID() { return id; }
     private:

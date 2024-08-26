@@ -7,6 +7,9 @@ class Client;
 
 namespace packet {
 
+/**
+ * @brief Class PacketHandler to handle Client packets (received & sent)
+ */
 class PacketHandler {
     public:
         Client *client;

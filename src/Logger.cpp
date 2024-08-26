@@ -3,7 +3,6 @@
 #include <iostream>
 
 void Logger::log(LogLevel level, std::string message) {
-    #if DEBUG
     switch (level) {
         case INFO:
             std::cout << PREFIX_INFO << message << std::endl;
@@ -15,5 +14,4 @@ void Logger::log(LogLevel level, std::string message) {
             std::cout << PREFIX_ERROR << message << std::endl;
             break;
     }
-    #endif
 }
