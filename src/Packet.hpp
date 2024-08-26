@@ -23,6 +23,9 @@ namespace packet
 #define PACKET_BUFFER_SIZE 1024
     using ByteList = std::vector<uint8_t>;
 
+    /**
+     * @brief Class Packet to handle Client and Response packets
+     */
     class Packet
     {
     public:
@@ -40,13 +43,17 @@ namespace packet
     private:
     };
 
-    // Types
+    /**
+     * @brief Class Type to handle different types of data
+     * @tparam T The type of the data
+     * @see https://wiki.vg/Protocol#Data_types for more information
+     */
     template <typename T>
     class Type
     {
     public:
         Type(T data) : data(data) {}
-        virtual ByteList write();
+        virtual ByteList write() = 0;
 
     private:
         T data;
@@ -55,6 +62,9 @@ namespace packet
     using VarInt = Type<int>;
     using String = Type<std::string>;
 
+    /**
+     * @brief Class ClientPacket to handle packets from the client
+     */
     class ClientPacket : public Packet
     {
     public:

@@ -13,29 +13,19 @@ namespace packet
 
         switch (client->state)
         {
-        case Handshake:
-            handleHandshake(packet);
-            break;
-        case Login:
-            handleLogin(packet);
-            break;
-        case Play:
-            handlePlay(packet);
-            break;
-        case Configuration:
-            handleConfiguration(packet);
-            break;
+        case Handshake:     handleHandshake(packet);    break;
+        case Login:         handleLogin(packet);        break;
+        case Play:          handlePlay(packet);         break;
+        case Configuration: handleConfiguration(packet);break;
         default:
             Logger::log(ERR, "Invalid state");
             return 0;
         }
-
         return 1;
     }
 
     inline int PacketHandler::handleHandshake(ClientPacket *packet)
     {
-
         struct
         {
             int protocolVersion;

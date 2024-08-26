@@ -2,7 +2,7 @@
 
 #include "Types.hpp"
 
-Server::Server(std::string ip, int port) {
+Server::Server(std::string ip = "localhost", int port = 25565) {
     this->ip = ip;
     this->port = port;
 }
